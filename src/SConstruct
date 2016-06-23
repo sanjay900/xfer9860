@@ -1,0 +1,164 @@
+########################################
+# xfer9860 build script
+# written by Andreas Bertheussen
+#
+# Usage:
+#  scons		# Build a normal distribution (xfer9860)
+#  scons debug=1	# Build in debug mode
+#  scons -c		# Cleans out compiled files (does not affect dists)
+#
+# Special options:
+#  scons bin=1		# Build a static distribution (xfer9860-bin), only
+#  			intended for distributions, read below.
+#  scons dist=1		# Export the svn working copy to a directory decided
+#  			by version and binmode. If used with bin=1, the
+#  			precompiled binary is copied into bin/ in the dist.
+#  scons distpack=1	# Packs the destribution directory, bin=1 must be set
+#  			if you want to pack the binary distribution.
+#
+# Typical usage when making a NORMAL distribution:
+# Note that each step removes previosly created dists/packs with the same
+# name and version.
+#  (adjust the version variable here)
+#  scons
+#  scons dist=1		# have a look through the created directory
+#  scons distpack=1	# double check the tar-archive created
+#
+# Usage when making a BINARY distribution (static linked):
+# If you want to distribute a static linked version of xfer9860, you MUST
+# follow the licensing of libusb too (LGPL).
+#  (adjust version variable)
+#  scons bin=1
+#  scons bin=1 dist=1		# double check directory AND binary
+#  scons bin=1 distpack=1	# check the tar-archive
+#
+# When you are done with the distribution, use:
+#  scons distclean=1
+# or
+#  scons distclean=1 bin=1
+# depending on which distribution you want to clean.
+#
+
+########################################
+# Easy-access build variables
+#
+version = '0.2.2'
+dist = 'xfer9860'
+bindist = 'xfer9860-bin' # only used to set dist in case of bin-mode
+ccflags = '-O2 -pipe -fomit-frame-pointer -Wall -pedantic'
+liblist	= Split('usb-1.0 m')
+srclist	 = Split('uploadfile.c downloadfile.c getinfo.c optimizememory.c usbio.c Casio9860.c')
+default_env = Environment( CCFLAGS = ccflags)
+
+########################################
+# Check for bin= flag, which enables static build and included binary on dist=
+#
+if ARGUMENTS.get('bin', 0):
+	print '!!! You are building a binary release (static linked). NOT'
+	print '!!! recommended for normal users. If you want to distribute the'
+	print '!!! binary, you must include sources for libusb, to comply with'
+	print '!!! libusb\'s licensing (LGPL)'
+	default_env.Append(LINKFLAGS = '-static')
+	dist = bindist
+
+########################################
+# Clean distribution
+#
+if ARGUMENTS.get('distclean', 0):
+	import os
+	print '==== Cleaning %s with the version %s ====' % (dist, version)
+	os.system('rm -rf /tmp/%s-%s*' % (dist, version))
+	print 'Done'
+	Exit()
+
+########################################
+# Create distribution directory in /tmp/
+#
+if ARGUMENTS.get('dist', 0):
+	import os
+	print '!!! Making a dist requires that the code is downloaded through SVN.'
+	if not os.path.exists('/tmp/'):
+		print 'Cannot find /tmp, exiting!'
+		Exit()
+	os.system('rm -rf /tmp/%s-%s/' % (dist, version)) # delete possible old dists
+	print 'Exporting sources to /tmp/%s-%s/...' % (dist, version)
+	os.system('svn export .. /tmp/%s-%s/' % (dist, version))
+	if ARGUMENTS.get('bin', 0): # include the actual binary, dist refers to xfer9860-bin here
+		print 'Copying %s into bin/' % dist
+		if not os.path.exists(dist):
+			print '!!! Could not find binary, remember to compile with bin=1 first!'
+			os.system('rm -rf /tmp/%s-%s/' % (dist, version)) # remove dir again
+			Exit()
+		os.system('mkdir /tmp/%s-%s/bin/' % (dist, version))
+		os.system('cp %s /tmp/%s-%s/bin/' % (dist, dist, version))
+	print 'Done. Test dist directory before packing.'
+	Exit()
+
+########################################
+# Archive previously made distribution directory
+#
+if ARGUMENTS.get('distpack', 0):
+	import os
+	os.system('rm -rf /tmp/%s-%s.tar.bz2' % (dist, version)) # delete old packages
+	if not os.path.exists('/tmp/%s-%s/' % (dist, version)):
+		print '!!! Could not find dist directory. Remember to dist first.'
+		Exit()
+	if ARGUMENTS.get('bin', 0) and not os.path.exists('/tmp/%s-%s/bin/' % (dist, version)):
+		print '!!! Could not find bin directory, compile and dist with bin=1!'
+		Exit()
+
+	print 'Archiving distribution into /tmp/%s-%s.tar.bz2...' % (dist, version)
+	os.system('tar -cjf /tmp/%s-%s.tar.bz2 -C /tmp %s-%s/' % (dist, version, dist, version) )
+	print 'Done.'
+	Exit()
+
+########################################
+# Checks for required libs and includes
+#
+if not default_env.GetOption('clean'): # don't perform on clean
+	print '==== Looking for required libraries ===='
+	conf = Configure(default_env)
+	# libraries with their headers
+	if not conf.CheckLibWithHeader('usb-1.0', 'libusb-1.0/libusb.h', 'C') \
+	:
+		print 'Did not find the needed libraries or headers, exiting!'
+		Exit(1)
+	# general headers
+	print '\n==== Looking for required includes ===='
+	if not conf.CheckCHeader('unistd.h') \
+	or not conf.CheckCHeader('stdio.h') \
+	or not conf.CheckCHeader('string.h') \
+	or not conf.CheckCHeader('stdlib.h') \
+	or not conf.CheckCHeader('sys/types.h') \
+	or not conf.CheckCHeader('sys/stat.h') \
+	or not conf.CheckCHeader('math.h') \
+	:
+		print 'Did not find needed includes, exiting!'
+		Exit(1)
+
+	default_env = conf.Finish()
+
+print ''
+########################################
+# Enable macro def's in case of debug or snoop mode
+#
+debug = ARGUMENTS.get('debug', 0)
+if int(debug):
+	print '==== Compiling in DEBUG/SNOOP MODE! ===='
+	default_env.Append(CPPDEFINES = Split('DEBUG SNOOP'))
+
+########################################
+# xfer9860.c expects its version to be defined at compile-time.
+# create a new environment for it, and modify it
+#
+versioned = default_env.Clone()
+versioned.Append(CPPDEFINES = r'VERSION=\"v' + version + r'\"')
+objlist = versioned.Object('xfer9860.c')
+
+if not default_env.GetOption('clean'):
+	print '==== Starting program compilation ===='
+xfer9860 = default_env.Program(target = dist, source = srclist + objlist, LIBS = liblist)
+# makes sure to remove both binaries, and logfiles
+Clean(xfer9860, [dist, bindist, 'config.log', '../config.log'])
+Default(xfer9860)
+

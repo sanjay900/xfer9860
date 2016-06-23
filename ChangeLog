@@ -1,0 +1,19 @@
+0.2.2:
+	* Moved to libusb-1.0 that will hopefully work with 9750-GII calculators.
+
+0.2.1:
+	* Cleaned up code to avoid compiler warnings
+	* Build script is updated for the newer SCons 1.*
+	* Build script links math library
+
+0.2:
+	* Rewritten codebase, allows command line parameters
+	* File download support
+	* Calculator information support
+	* Flash optimization command added
+	* Memory optimization support
+	* New SCons-based build system
+
+0.1:
+	* Initial Release
+	* File upload support

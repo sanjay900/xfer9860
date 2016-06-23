@@ -1,0 +1,43 @@
+= Readme =======================================================================
+
+The goal of xfer9860 is to provide an open source equivalent of FA-124 by Casio.
+You can find new releases, our forum, tracker and most other things at:
+
+	http://sourceforge.net/projects/xfer9860
+
+The projects website (also hosted by sf.net) is located at:
+
+	http://xfer9860.sourceforge.net/
+
+Installation/usage instructions for xfer9860 can be found in the INSTALL file.
+Note that file download only works reliably on small files, up to a few 100kB.
+
+If you have time, give me feedback at <andreasmarcel@gmail.com> and tell me what
+could be better, or what you like!
+
+= History ======================================================================
+
+Time flies, so I decided to take notes on the development and history;
+
+I (Andreas Bertheussen) had just bought an fx-9860G SD for my math exam (1MX,
+Norway). The possibilities using FA-124 were quite good, but because I was using
+Linux, there were none. Looking around for solutions, I stumbled upon UCF
+(www.casiocalc.com), where Manuel Naranjo also seemed to be interested in
+finding a way to use the calculator in Linux. Manuel created the
+9860transfer project on Google Code (March 07) and we started digging through
+USB logs, trying to figure out the protocol. Based on the logs, Manuel wrote a
+simple program that 'replayed' what FA-124 did.
+There was not much progress until I got my hands on some real documentation
+(April). Some of the routines of Manuel's 9860transfer were moved on to a new
+project, xfer9860, hosted on sourceforge and maintained by me. The development
+of xfer9860 stalled until late June, when some weird bugs were removed, and
+v0.1 was released.
+
+= Thanks to ===================================================================
+
+Robert Pechfelder <CFX_Pechi@gmx.de> for testing of the release.
+The libusb project <http://libusb.sourceforge.net> for the nice API.
+Greg Kroah-Hartman <greg@kroah.com> for initial usb code.
+Casio Kingdom <www.casiokingdom.org>
+UCF <www.casiocalc.org> and their members for support and interest.
+Bruno Leon Alata <brleoal@gmail.com> for bothering to port it to libusb-1.0

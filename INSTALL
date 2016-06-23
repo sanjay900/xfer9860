@@ -1,0 +1,15 @@
+= Compiling from source ========================================================
+
+You need libusb-1.0 and SCons (requires python). To start compilation, run:
+  $ scons -Q
+
+The executable is located in `src/', and can be run with:
+  $ src/xfer9860
+
+Depending on the distribution, you might have to run xfe9860 as root.
+If you want to "install" xfer9860, copy the executable to an appropriate place
+like `/usr/bin/'
+
+To clean up after the compilation (including the xfer9860 binary), run:
+  $ scons -c
+

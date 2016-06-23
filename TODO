@@ -1,0 +1,3 @@
+o Support for listing directories
+o Speed up and make file downloads more stable
+o Add check for AU version to calculate memory capacity based on its limited memory size
