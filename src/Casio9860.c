@@ -22,6 +22,7 @@
 *******************************************************************************/
 
 #include <stdio.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <libusb-1.0/libusb.h>
 #include <string.h>
@@ -39,10 +40,38 @@ struct libusb_device_handle* fx_getDeviceHandle() {
 	   printf("\nInit Error %d\n",r);
 	   return NULL;
 	}
-	libusb_set_debug(ctx, 3); //set verbosity level to 3, as suggested in the documentation
-	usb_handle = libusb_open_device_with_vid_pid(ctx, C9860_VENDOR_ID, C9860_PRODUCT_ID); //these are vendorID and productID I found for my usb device
+	libusb_set_option(ctx, LIBUSB_OPTION_LOG_LEVEL, 3);
+	libusb_context *context = NULL;
+    libusb_device **list = NULL;
+    ssize_t count = 0;
+	char ask;
+
+    count = libusb_get_device_list(context, &list);
+    if (count == 0) {
+		printf("\nERR: No USB devices found!\n");
+		return NULL;
+	}
+
+    for (size_t idx = 0; idx < count; ++idx) {
+        libusb_device *device = list[idx];
+        struct libusb_device_descriptor desc = {0};
+
+        ret = libusb_get_device_descriptor(device, &desc);
+		if (ret != 0) {
+			printf("\nERR: libusb_get_device_descriptor(): %i\n", ret);
+		}
+
+		if (desc.idVendor == C9860_VENDOR_ID && desc.idProduct == C9860_PRODUCT_ID) {
+			printf("Device found, use? (y/n)\n");
+			scanf(" %c", &ask);
+			if (tolower(ask) == 'y') {
+				ret = libusb_open(device, &usb_handle);
+			}
+		}
+    }
+
+    libusb_free_device_list(list, count);
 	if (usb_handle == NULL) {
-		printf("\nERR: libusb_open() returned NULL.\n");
 		return NULL;
 	}
 
