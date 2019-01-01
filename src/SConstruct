@@ -43,8 +43,8 @@
 # Easy-access build variables
 #
 version = '0.2.2'
-dist = 'xfer9860'
-bindist = 'xfer9860-bin' # only used to set dist in case of bin-mode
+dist = '../xfer9860'
+bindist = '../xfer9860-bin' # only used to set dist in case of bin-mode
 ccflags = '-O2 -pipe -fomit-frame-pointer -Wall -pedantic'
 liblist	= Split('usb-1.0 m')
 srclist	 = Split('uploadfile.c downloadfile.c getinfo.c optimizememory.c usbio.c Casio9860.c')
