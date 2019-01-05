@@ -19,9 +19,9 @@ could be better, or what you like!
 
 Time flies, so I decided to take notes on the development and history;
 
-I (Andreas Bertheussen) had just bought an fx-9860G SD for my math exam (1MX,
-Norway). The possibilities using FA-124 were quite good, but because I was using
-Linux, there were none. Looking around for solutions, I stumbled upon UCF
+Andreas Bertheussen had just bought an fx-9860G SD for hist math exam (1MX,
+Norway). The possibilities using FA-124 were quite good, but because he was using
+Linux, there were none. Looking around for solutions, he stumbled upon UCF
 (www.casiocalc.com), where Manuel Naranjo also seemed to be interested in
 finding a way to use the calculator in Linux. Manuel created the
 9860transfer project on Google Code (March 07) and we started digging through
@@ -32,6 +32,9 @@ There was not much progress until I got my hands on some real documentation
 project, xfer9860, hosted on sourceforge and maintained by me. The development
 of xfer9860 stalled until late June, when some weird bugs were removed, and
 v0.1 was released.
+
+I (Sanjay Govind) found this project, however it had some problems and did not work
+with his fx-9740GII, so he fixed these problems.
 
 = Thanks to ===================================================================
 
