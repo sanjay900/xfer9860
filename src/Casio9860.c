@@ -32,7 +32,7 @@
 
 struct libusb_device_handle* fx_getDeviceHandle() {
 	int ret = 0;
-	struct libusb_device_handle *usb_handle;
+	struct libusb_device_handle *usb_handle = NULL;
 
 	struct libusb_context *ctx = NULL;//a libusb session
 	int r = libusb_init(&ctx);
@@ -150,7 +150,7 @@ int fx_doConnVer(struct libusb_device_handle *usb_handle) {
 	if (buffer == NULL) {printf("ERR: fx_doConnVer(): allocation failed.\n");}
 	fx_sendVerify(usb_handle, buffer, "00");	/* sends connver for start of communication */
 	ReadUSB(usb_handle, buffer, 6);
-	if (fx_getPacketType(buffer) == T_POSITIVE) {/* assuming the positive response is 'plain' */
+	if (fx_getPacketType(buffer) == T_VERIFY) {/* assuming the positive response is 'plain' */
 		free(buffer);
 		return 0;
 	} else {
