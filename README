@@ -34,7 +34,7 @@ of xfer9860 stalled until late June, when some weird bugs were removed, and
 v0.1 was released.
 
 I (Sanjay Govind) found this project, however it had some problems and did not work
-with his fx-9740GII, so he fixed these problems.
+with my fx-9740GII, so I fixed these problems. I also added some changes to make it more user friendly in places.
 
 = Thanks to ===================================================================
 
